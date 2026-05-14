@@ -95,7 +95,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_filme AS
         v_cur SYS_REFCURSOR;
     BEGIN
         OPEN v_cur FOR
-            SELECT f.titlu,
+            SELECT f.id,
+                   f.titlu,
                    f.an_lansare,
                    c.nume AS categorie,
                    f.rating_mediu,
