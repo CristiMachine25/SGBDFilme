@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}{{ film.titlu }}{% endblock %}
+{% block content %}
+
+{% set sent_lower = (sentiment or '')|lower %}
+{% if 'pozitiv' in sent_lower %}
+    {% set sent_class = 'bg-success' %}
+{% elif 'negativ' in sent_lower %}
+    {% set sent_class = 'bg-danger' %}
+{% else %}
+    {% set sent_class = 'bg-secondary' %}
+{% endif %}
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1>{{ film.titlu }}</h1>
+        <p class="text-muted">
+            {{ film.an_lansare }} &middot; {{ film.categorie }}
+        </p>
+    </div>
+    <div class="text-end">
+        <div class="mb-2">
+            <span class="rating-star">&#9733;</span>
+            <strong>{{ "%.2f"|format(film.rating_mediu) if film.rating_mediu else "-" }}</strong>
+            <small class="text-muted">({{ film.nr_voturi or 0 }} voturi)</small>
+        </div>
+        <span class="badge sentiment-badge {{ sent_class }}">Sentiment: {{ sentiment or 'n/a' }}</span>
+    </div>
+</div>
+
+{% if film.descriere %}
+<p>{{ film.descriere }}</p>
+{% endif %}
+
+<hr>
+
+<h3>Actori</h3>
+{% if actori %}
+<ul class="list-group mb-4">
+    {% for a in actori %}
+    <li class="list-group-item d-flex justify-content-between">
+        <span>{{ a.nume }} {{ a.prenume }}</span>
+        <span class="text-muted">{{ a.rol }}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted">Niciun actor inregistrat.</p>
+{% endif %}
+
+<h3>Versiuni disponibile</h3>
+{% if versiuni %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Limba</th>
+            <th>Subtitrare</th>
+            <th>Calitate</th>
+            <th>Disponibil</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in versiuni %}
+        <tr>
+            <td>{{ v.limba }}</td>
+            <td>{{ v.subtitrare or '-' }}</td>
+            <td>{{ v.calitate or '-' }}</td>
+            <td>{{ v.disponibil or '-' }}</td>
+            <td>
+                <form method="post" action="{{ url_for('vizualizeaza') }}" class="d-flex gap-2">
+                    <input type="hidden" name="versiune_id" value="{{ v.id }}">
+                    <input type="hidden" name="film_id" value="{{ film.id }}">
+                    <input type="number" name="durata" value="90" min="1" class="form-control form-control-sm" style="width:80px">
+                    <button type="submit" class="btn btn-sm btn-success">Vizioneaza</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="text-muted">Nicio versiune disponibila.</p>
+{% endif %}
+
+<h3>Comentarii</h3>
+{% if comentarii %}
+<ul class="list-group mb-4">
+    {% for c in comentarii %}
+    <li class="list-group-item">
+        <div class="d-flex justify-content-between">
+            <strong>{{ c.nume_client or 'Anonim' }}</strong>
+            <small class="text-muted">{{ c.data_vot }} &middot; Nota: {{ c.nota }}</small>
+        </div>
+        {% if c.comentariu %}
+        <p class="mb-0 mt-1">{{ c.comentariu }}</p>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted">Niciun comentariu inca.</p>
+{% endif %}
+
+<h3>Voteaza filmul</h3>
+{% if session.get('client_id') %}
+<form method="post" action="{{ url_for('voteaza') }}" class="card card-body">
+    <input type="hidden" name="film_id" value="{{ film.id }}">
+    <div class="mb-3">
+        <label for="nota" class="form-label">Nota (1-5)</label>
+        <select name="nota" id="nota" class="form-select" style="max-width:200px">
+            {% for n in range(1, 6) %}
+                <option value="{{ n }}">{{ n }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="comentariu" class="form-label">Comentariu (optional)</label>
+        <textarea name="comentariu" id="comentariu" class="form-control" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" style="max-width:200px">Trimite vot</button>
+</form>
+{% else %}
+<p class="text-muted"><a href="{{ url_for('login') }}">Logheaza-te</a> pentru a vota.</p>
+{% endif %}
+
+{% endblock %}

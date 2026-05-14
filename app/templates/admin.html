@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<h1 class="mb-4">Admin - Statistici</h1>
+
+<section class="mb-5">
+    <h3>Top filme</h3>
+    {% if top %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Titlu</th>
+                <th>Rating</th>
+                <th>Voturi</th>
+                <th>Sentiment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for f in top %}
+            {% set sent_lower = (f.sentiment or '')|lower %}
+            {% if 'pozitiv' in sent_lower %}
+                {% set sent_class = 'bg-success' %}
+            {% elif 'negativ' in sent_lower %}
+                {% set sent_class = 'bg-danger' %}
+            {% else %}
+                {% set sent_class = 'bg-secondary' %}
+            {% endif %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><a href="{{ url_for('film_detail', film_id=f.id) }}">{{ f.titlu }}</a></td>
+                <td>
+                    <span class="rating-star">&#9733;</span>
+                    {{ "%.2f"|format(f.rating_mediu) if f.rating_mediu else "-" }}
+                </td>
+                <td>{{ f.nr_voturi or 0 }}</td>
+                <td><span class="badge sentiment-badge {{ sent_class }}">{{ f.sentiment or 'n/a' }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">Nicio data.</p>
+    {% endif %}
+</section>
+
+<section class="mb-5">
+    <h3>Predictii sezon</h3>
+    <form method="get" action="{{ url_for('admin') }}" class="row g-2 mb-3">
+        <div class="col-auto">
+            <label for="luna" class="col-form-label">Luna:</label>
+        </div>
+        <div class="col-auto">
+            <select name="luna" id="luna" class="form-select">
+                {% for m in range(1, 13) %}
+                    <option value="{{ m }}" {% if luna == m %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Afiseaza</button>
+        </div>
+    </form>
+
+    {% if predictii %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Categorie</th>
+                <th>Nr vizualizari</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in predictii %}
+            <tr>
+                <td>{{ p.categorie }}</td>
+                <td>{{ p.nr_vizualizari }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">Nicio predictie pentru luna {{ luna }}.</p>
+    {% endif %}
+</section>
+{% endblock %}

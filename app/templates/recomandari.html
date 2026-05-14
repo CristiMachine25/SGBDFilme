@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Recomandari{% endblock %}
+{% block content %}
+<h1 class="mb-4">Recomandari pentru tine</h1>
+
+{% if recomandari %}
+<div class="row g-3">
+    {% for r in recomandari %}
+    <div class="col-md-4 col-lg-3">
+        <div class="card h-100 film-card">
+            <div class="card-body">
+                <h5 class="card-title">{{ r.titlu }}</h5>
+                <p class="card-text mb-1">
+                    <small class="text-muted">
+                        {{ r.an_lansare }}{% if r.categorie %} &middot; {{ r.categorie }}{% endif %}
+                    </small>
+                </p>
+                <p class="card-text mb-1">
+                    <span class="rating-star">&#9733;</span>
+                    {{ "%.2f"|format(r.rating_mediu) if r.rating_mediu else "-" }}
+                </p>
+                <p class="card-text mb-2">
+                    <span class="badge bg-info">Frecventa: {{ r.frecventa or 0 }}</span>
+                </p>
+                <a href="{{ url_for('film_detail', film_id=r.id) }}" class="btn btn-sm btn-primary">Detalii</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">Nicio recomandare disponibila momentan. Vizioneaza si voteaza cateva filme.</p>
+{% endif %}
+{% endblock %}

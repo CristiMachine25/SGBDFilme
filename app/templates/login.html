@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h1 class="mb-4">Login</h1>
+        <div class="card">
+            <div class="card-body">
+                <form method="post" action="{{ url_for('login') }}" id="loginForm">
+                    <div class="mb-3">
+                        <label for="client_id" class="form-label">Selecteaza client</label>
+                        <select name="client_id" id="client_id" class="form-select" required>
+                            <option value="">-- alege --</option>
+                            {% for c in clienti %}
+                                <option value="{{ c.id }}" data-nume="{{ c.nume_complet }}">{{ c.nume_complet }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <input type="hidden" name="client_nume" id="client_nume">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', function() {
+    var sel = document.getElementById('client_id');
+    var opt = sel.options[sel.selectedIndex];
+    document.getElementById('client_nume').value = opt.getAttribute('data-nume') || '';
+});
+</script>
+{% endblock %}

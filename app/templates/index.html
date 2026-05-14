@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Filme{% endblock %}
+{% block content %}
+<h1 class="mb-4">Filme</h1>
+
+<form method="get" action="{{ url_for('index') }}" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select name="categorie" class="form-select">
+            <option value="">Toate categoriile</option>
+            {% for c in categorii %}
+                <option value="{{ c.nume }}" {% if selected == c.nume %}selected{% endif %}>{{ c.nume }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Filtreaza</button>
+    </div>
+    {% if selected %}
+    <div class="col-auto">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Reseteaza</a>
+    </div>
+    {% endif %}
+</form>
+
+{% if filme %}
+<div class="row g-3">
+    {% for f in filme %}
+    <div class="col-md-4 col-lg-3">
+        <div class="card h-100 film-card">
+            <div class="card-body">
+                <h5 class="card-title">{{ f.titlu }}</h5>
+                <p class="card-text mb-1"><small class="text-muted">{{ f.an_lansare }} &middot; {{ f.categorie }}</small></p>
+                <p class="card-text mb-2">
+                    <span class="rating-star">&#9733;</span>
+                    {{ "%.2f"|format(f.rating_mediu) if f.rating_mediu else "-" }}
+                    <small class="text-muted">({{ f.nr_voturi or 0 }} voturi)</small>
+                </p>
+                <a href="{{ url_for('film_detail', film_id=f.id) }}" class="btn btn-sm btn-primary">Detalii</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">Nu exista filme.</p>
+{% endif %}
+{% endblock %}

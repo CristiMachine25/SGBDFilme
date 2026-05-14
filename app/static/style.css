@@ -1,0 +1,21 @@
+/* Rating stars */
+.rating-star {
+    color: #f5c518;
+    font-size: 1.1em;
+}
+
+/* Sentiment badges */
+.sentiment-badge {
+    font-size: 0.85em;
+    padding: 0.4em 0.7em;
+}
+
+/* Card hover effect */
+.film-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.film-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
