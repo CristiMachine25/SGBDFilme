@@ -1,3 +1,5 @@
+WHENEVER SQLERROR EXIT FAILURE
+
 -- =====================================================================
 -- 02_triggers.sql
 -- Triggers pentru platforma de filme (proiect PSGBD)
@@ -55,6 +57,7 @@ COMPOUND TRIGGER
 
 END trg_recalc_rating;
 /
+SHOW ERRORS
 
 
 -- ---------------------------------------------------------------------
@@ -71,6 +74,7 @@ BEGIN
     END IF;
 END trg_marcheaza_finalizat;
 /
+SHOW ERRORS
 
 
 -- =====================================================================

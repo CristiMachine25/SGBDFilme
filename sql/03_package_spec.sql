@@ -1,3 +1,5 @@
+WHENEVER SQLERROR EXIT FAILURE
+
 -- =====================================================================
 -- pkg_filme - SPECIFICATIE
 -- Pachet PL/SQL pentru platforma de vizionare filme.
@@ -62,3 +64,4 @@ CREATE OR REPLACE PACKAGE pkg_filme AS
 
 END pkg_filme;
 /
+SHOW ERRORS

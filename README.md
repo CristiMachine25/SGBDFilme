@@ -75,6 +75,10 @@ python -m app.app
 ```
 Deschide http://localhost:5000
 
+## Demo recomandat
+
+Pentru ca toate fluxurile să returneze rezultate non-goale, intră ca **clientul cu id 1 (`Popescu Andrei`)** sau **id 3 (`Ionescu Maria`)**. Au mai multe voturi (inclusiv note 5) populate în baza de date, deci `/recomandari` va produce rezultate. Pe `/admin` selectează luna care apare cu cele mai multe vizualizări (datele seed acoperă luni multiple).
+
 ## Funcționalități
 
 - **Catalog filme** - listare cu filtrare după categorie.

@@ -10,21 +10,22 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-key")
 
 
+_ORA_MESSAGES = {
+    "ORA-20001:": "Client inexistent.",
+    "ORA-20002:": "Versiune indisponibilă.",
+    "ORA-20003:": "Nota trebuie sa fie intre 1 si 5.",
+    "ORA-20004:": "Film inexistent.",
+    "ORA-20005:": "Luna invalida (1..12).",
+    "ORA-20006:": "Durata invalida.",
+}
+
+
 def parse_oracle_error(e):
-    """Extract Oracle business error -20001..-20009 message. Returns user-friendly string."""
+    """Map a known PL/SQL business error to a friendly Romanian message."""
     msg = str(e)
-    if "ORA-20001" in msg:
-        return "Client inexistent."
-    if "ORA-20002" in msg:
-        return "Versiune indisponibilă."
-    if "ORA-20003" in msg:
-        return "Nota trebuie sa fie intre 1 si 5."
-    if "ORA-20004" in msg:
-        return "Film inexistent."
-    if "ORA-20005" in msg:
-        return "Luna invalida (1..12)."
-    if "ORA-20006" in msg:
-        return "Durata invalida."
+    for code, friendly in _ORA_MESSAGES.items():
+        if code in msg:
+            return friendly
     return "Eroare baza de date: " + msg.split("\n")[0]
 
 
@@ -55,7 +56,7 @@ def login():
             flash("Logat ca " + request.form.get("client_nume", ""), "success")
             return redirect(url_for("index"))
     clienti = db.fetch_all(
-        "SELECT id, nume || ' ' || prenume AS nume_complet FROM clienti ORDER BY nume")
+        "SELECT id, nume || ' ' || prenume AS nume_complet FROM clienti ORDER BY nume, prenume")
     return render_template("login.html", clienti=clienti)
 
 

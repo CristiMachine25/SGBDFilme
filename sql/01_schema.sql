@@ -4,6 +4,8 @@
 -- Foloseste toate cele 5 tipuri de constrangeri: PK, FK, UNIQUE, NOT NULL, CHECK
 -- ============================================================
 
+WHENEVER SQLERROR EXIT FAILURE
+
 -- Tabela 1: categorii de filme
 CREATE TABLE categorii (
     id         NUMBER(6)      NOT NULL,

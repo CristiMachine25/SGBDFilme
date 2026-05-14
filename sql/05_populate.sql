@@ -2,6 +2,11 @@
 -- 05_populate.sql
 -- Populare cu date realiste pentru proiectul PSGBD - Platforma Filme
 -- Minim 15 inregistrari per tabela
+--
+-- ATENTIE: ruleaza DOAR pe schema proaspata (dupa 99_drop_all.sql +
+-- 01_schema.sql + 02_triggers.sql + 03_package_spec.sql +
+-- 04_package_body.sql). ID-urile FK sunt presupuse 1..N in ordinea
+-- inserarii din acest script.
 -- =====================================================================
 
 SET DEFINE OFF;

@@ -1,3 +1,5 @@
+WHENEVER SQLERROR EXIT FAILURE
+
 -- =====================================================================
 -- pkg_filme - CORP (BODY)
 -- Implementarea pachetului pkg_filme pentru platforma de filme.
@@ -345,3 +347,4 @@ CREATE OR REPLACE PACKAGE BODY pkg_filme AS
 
 END pkg_filme;
 /
+SHOW ERRORS
