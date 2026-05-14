@@ -39,7 +39,7 @@
 <ul class="list-group mb-4">
     {% for a in actori %}
     <li class="list-group-item d-flex justify-content-between">
-        <span>{{ a.nume }} {{ a.prenume }}</span>
+        <span>{{ a.prenume }} {{ a.nume_familie }}{% if a.nume_scena and a.nume_scena != (a.prenume ~ ' ' ~ a.nume_familie) %} ({{ a.nume_scena }}){% endif %}</span>
         <span class="text-muted">{{ a.rol }}</span>
     </li>
     {% endfor %}
@@ -53,24 +53,22 @@
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>Format</th>
+            <th>Rezolutie</th>
             <th>Limba</th>
-            <th>Subtitrare</th>
-            <th>Calitate</th>
-            <th>Disponibil</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         {% for v in versiuni %}
         <tr>
+            <td>{{ v.format }}</td>
+            <td>{{ v.rezolutie }}</td>
             <td>{{ v.limba }}</td>
-            <td>{{ v.subtitrare or '-' }}</td>
-            <td>{{ v.calitate or '-' }}</td>
-            <td>{{ v.disponibil or '-' }}</td>
             <td>
                 <form method="post" action="{{ url_for('vizualizeaza') }}" class="d-flex gap-2">
                     <input type="hidden" name="versiune_id" value="{{ v.id }}">
-                    <input type="hidden" name="film_id" value="{{ film.id }}">
+                    <input type="hidden" name="film_id" value="{{ film_id }}">
                     <input type="number" name="durata" value="90" min="1" class="form-control form-control-sm" style="width:80px">
                     <button type="submit" class="btn btn-sm btn-success">Vizioneaza</button>
                 </form>
@@ -89,7 +87,7 @@
     {% for c in comentarii %}
     <li class="list-group-item">
         <div class="d-flex justify-content-between">
-            <strong>{{ c.nume_client or 'Anonim' }}</strong>
+            <strong>{{ c.prenume }} {{ c.nume }}</strong>
             <small class="text-muted">{{ c.data_vot }} &middot; Nota: {{ c.nota }}</small>
         </div>
         {% if c.comentariu %}
@@ -105,7 +103,7 @@
 <h3>Voteaza filmul</h3>
 {% if session.get('client_id') %}
 <form method="post" action="{{ url_for('voteaza') }}" class="card card-body">
-    <input type="hidden" name="film_id" value="{{ film.id }}">
+    <input type="hidden" name="film_id" value="{{ film_id }}">
     <div class="mb-3">
         <label for="nota" class="form-label">Nota (1-5)</label>
         <select name="nota" id="nota" class="form-select" style="max-width:200px">

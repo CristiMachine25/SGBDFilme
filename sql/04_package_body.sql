@@ -176,8 +176,9 @@ CREATE OR REPLACE PACKAGE BODY pkg_filme AS
                  GROUP BY v.film_id
             )
             -- Pasul 4: rezultatul final, ordonat si limitat
-            SELECT f.id AS film_id,
+            SELECT f.id,
                    f.titlu,
+                   f.an_lansare,
                    c.nume AS categorie,
                    f.rating_mediu,
                    cnd.frecventa

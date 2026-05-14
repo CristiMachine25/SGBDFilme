@@ -80,7 +80,7 @@ def film_detail(film_id):
     comentarii = db.call_func_cursor("f_comentarii_film", film_id)
     sentiment = db.call_func_scalar("f_sentiment_film", film_id)
     return render_template("film.html",
-        film=detalii[0], actori=actori, versiuni=versiuni,
+        film=detalii[0], film_id=film_id, actori=actori, versiuni=versiuni,
         comentarii=comentarii, sentiment=sentiment)
 
 
