@@ -4,6 +4,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Fetch CLOB/BLOB columns as plain strings/bytes eagerly. Without this,
+# Oracle returns lazy LOB objects that fail with DPY-1001 once the
+# owning connection is closed (e.g. during Jinja template rendering).
+oracledb.defaults.fetch_lobs = False
+
 USER = os.getenv("ORACLE_USER")
 PASSWORD = os.getenv("ORACLE_PASSWORD")
 DSN = os.getenv("ORACLE_DSN")
