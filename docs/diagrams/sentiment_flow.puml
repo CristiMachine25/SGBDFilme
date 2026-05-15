@@ -1,0 +1,51 @@
+@startuml Algoritm sentiment
+!theme plain
+skinparam ActivityBackgroundColor #E5E9F0
+skinparam ActivityBorderColor #2E3440
+skinparam ActivityDiamondBackgroundColor #ECEFF4
+
+title Algoritmul f_sentiment_film (keyword matching)
+
+start
+
+:p_film_id;
+
+if (Film exista?) then (nu)
+    :RAISE_APPLICATION_ERROR(-20004);
+    stop
+else (da)
+endif
+
+:v_total := 0;
+
+partition "Pentru fiecare comentariu" {
+    :Selectam comentariu din voturi
+    WHERE film_id = p_film_id;
+    :TO_CHAR(SUBSTR(comentariu, 1, 4000));
+
+    partition "Tokenizare (REGEXP_SUBSTR + CONNECT BY)" {
+        :Spargem textul in cuvinte
+        cu pattern [^[:space:][:punct:]]+;
+        :LOWER() pentru fiecare cuvant;
+    }
+
+    partition "Cautare in dictionar" {
+        :Pentru fiecare cuvant:
+        SELECT polaritate
+        FROM cuvinte_sentiment
+        WHERE cuvant = ...;
+        :v_total := v_total + polaritate;
+    }
+}
+
+if (v_total > 0?) then (da)
+    :RETURN 'pozitiv';
+elseif (v_total < 0?) then (da)
+    :RETURN 'negativ';
+else
+    :RETURN 'neutru';
+endif
+
+stop
+
+@enduml

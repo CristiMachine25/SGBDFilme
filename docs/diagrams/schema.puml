@@ -1,0 +1,120 @@
+@startuml SGBDFilme - Schema BD
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam classBackgroundColor #FAFAFA
+skinparam classBorderColor #555555
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #2E3440
+    HeaderBackgroundColor #D8DEE9
+}
+hide circle
+
+title SGBDFilme — Diagrama UML (schema relationala in BCNF/4NF)
+
+class categorii {
+    + id : NUMBER(6) <<PK>>
+    --
+    nume : VARCHAR2(50) <<UNIQUE, NOT NULL>>
+}
+
+class filme {
+    + id : NUMBER(8) <<PK>>
+    --
+    titlu : VARCHAR2(200) <<NOT NULL>>
+    descriere : VARCHAR2(2000)
+    an_lansare : NUMBER(4) <<CHECK 1900..2100>>
+    # categorie_id : NUMBER(6) <<FK>>
+    rating_mediu : NUMBER(3,2) <<derivat - trigger>>
+    nr_voturi : NUMBER(8) <<derivat - trigger>>
+}
+
+class actori {
+    + id : NUMBER(8) <<PK>>
+    --
+    nume_scena : VARCHAR2(100) <<UNIQUE>>
+    prenume : VARCHAR2(50) <<NOT NULL>>
+    nume_familie : VARCHAR2(50) <<NOT NULL>>
+    data_nastere : DATE
+}
+
+class film_actori {
+    + film_id : NUMBER(8) <<PK, FK>>
+    + actor_id : NUMBER(8) <<PK, FK>>
+    --
+    rol : VARCHAR2(100) <<NOT NULL>>
+}
+
+class versiuni_film {
+    + id : NUMBER(8) <<PK>>
+    --
+    # film_id : NUMBER(8) <<FK>>
+    format : VARCHAR2(20) <<CHECK>>
+    rezolutie : VARCHAR2(10) <<CHECK>>
+    limba : VARCHAR2(30)
+    <i>UNIQUE(film_id, format, rezolutie, limba)</i>
+}
+
+class clienti {
+    + id : NUMBER(8) <<PK>>
+    --
+    nume : VARCHAR2(50) <<NOT NULL>>
+    prenume : VARCHAR2(50) <<NOT NULL>>
+    email : VARCHAR2(100) <<UNIQUE, CHECK>>
+    oras : VARCHAR2(50) <<NOT NULL>>
+    telefon : VARCHAR2(20)
+}
+
+class vizualizari {
+    + id : NUMBER(10) <<PK>>
+    --
+    # client_id : NUMBER(8) <<FK>>
+    # versiune_id : NUMBER(8) <<FK>>
+    data_vizualizare : DATE <<DEFAULT SYSDATE>>
+    durata_minute : NUMBER(4) <<CHECK 0..600>>
+    finalizat : NUMBER(1) <<CHECK 0|1>>
+    <i>trigger BEFORE INSERT seteaza finalizat</i>
+}
+
+class voturi {
+    + id : NUMBER(10) <<PK>>
+    --
+    # client_id : NUMBER(8) <<FK>>
+    # film_id : NUMBER(8) <<FK>>
+    nota : NUMBER(1) <<CHECK 1..5>>
+    comentariu : CLOB
+    data_vot : DATE <<DEFAULT SYSDATE>>
+    <i>UNIQUE(client_id, film_id)</i>
+}
+
+class cuvinte_sentiment {
+    + id : NUMBER(6) <<PK>>
+    --
+    cuvant : VARCHAR2(50) <<UNIQUE>>
+    polaritate : NUMBER(2) <<CHECK -1|+1>>
+}
+
+categorii "1" --o "0..N" filme        : are
+filme "1" --o "0..N" versiuni_film    : are
+filme "1" --o "0..N" film_actori      : este jucat in
+actori "1" --o "0..N" film_actori     : joaca in
+clienti "1" --o "0..N" vizualizari    : a vizionat
+versiuni_film "1" --o "0..N" vizualizari : este vizualizata in
+clienti "1" --o "0..N" voturi         : voteaza
+filme "1" --o "0..N" voturi           : are vot
+
+note bottom of voturi
+  Tabela alimenteaza:
+  - trigger compus trg_recalc_rating
+    (mentine filme.rating_mediu / nr_voturi)
+  - functia f_sentiment_film via comentariu
+    + tabela cuvinte_sentiment
+end note
+
+note bottom of cuvinte_sentiment
+  Dictionar de polaritati
+  pentru analiza sentiment.
+end note
+
+@enduml

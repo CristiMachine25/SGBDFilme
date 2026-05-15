@@ -1,0 +1,59 @@
+@startuml Algoritm recomandari
+!theme plain
+skinparam ActivityBackgroundColor #E5E9F0
+skinparam ActivityBorderColor #2E3440
+skinparam ActivityDiamondBackgroundColor #ECEFF4
+skinparam NoteBackgroundColor #FFF7E6
+skinparam NoteBorderColor #B58900
+
+title Algoritmul f_recomandari (collaborative filtering user-based)
+
+start
+
+:p_client_id, p_limit;
+
+if (Clientul exista in clienti?) then (nu)
+    :RAISE_APPLICATION_ERROR(-20001);
+    stop
+else (da)
+endif
+
+partition "Pasul 1: preferinte client" {
+    :Selectam din voturi
+    cu client_id = p_client_id
+    si nota >= 3;
+}
+
+partition "Pasul 2: clienti similari" {
+    :JOIN cu voturi pentru
+    aceleasi filme cu
+    ABS(nota - nota_client) <= 1;
+    :GROUP BY client_id
+    -> similarity_score = COUNT;
+    :ORDER BY scor DESC
+    FETCH FIRST 10 ROWS (top-K);
+}
+
+partition "Pasul 3: candidati" {
+    :Filme votate cu nota >= 4
+    de clientii similari;
+    note right
+      EXCLUDEM filmele:
+      - deja votate de client
+      - deja vizionate de client
+    end note
+    :GROUP BY film_id
+    -> frecventa = COUNT;
+}
+
+partition "Pasul 4: ordonare + limit" {
+    :JOIN cu filme + categorii;
+    :ORDER BY frecventa DESC,
+    rating_mediu DESC;
+    :FETCH FIRST p_limit ROWS ONLY;
+}
+
+:Returneaza SYS_REFCURSOR;
+stop
+
+@enduml

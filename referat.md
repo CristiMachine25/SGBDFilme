@@ -4,9 +4,9 @@
 **Facultatea:** Informatică, Universitatea „Alexandru Ioan Cuza" Iași
 **Proiect:** Proiect 4 - Platformă vizualizare filme
 **Anul universitar:** 2025-2026
-**Student:** *[Nume Prenume]*
-**Grupa:** *[Grupa]*
-**Repository GitHub:** *[Link către repo]*
+**Student:** Gavrilean Cristian-Mihail
+**Grupa:** 2A3
+**Repository GitHub:** https://github.com/CristiMachine25/SGBDFilme
 
 ---
 
@@ -58,7 +58,7 @@ Pentru fiecare film se calculează o clasificare a sentimentului general („poz
 Sistemul oferă, în interfața de administrare, top categoriile cele mai vizionate într-o anumită lună din an, pentru a sprijini deciziile de marketing și promovare.
 
 ### CB10. Marcare automată „finalizat"
-O vizualizare cu durata urmărită ≥ 80 minute este considerată automat „finalizată" (acest prag e o euristică de business pentru un film standard). Sub 80 de minute este considerată parțială.
+O vizualizare cu durata urmărită >= 80 minute este considerată automat „finalizată" (acest prag e o euristică de business pentru un film standard). Sub 80 de minute este considerată parțială.
 
 ### CB11. Top filme
 Interfața de administrare arată un top al filmelor după rating mediu, pentru filmele care au cel puțin un vot.
@@ -109,7 +109,7 @@ Identificăm și o dependență multivaluată importantă:
 
 Aplicăm algoritmul de descompunere conform metodologiei studiate. Pentru fiecare FD `X → Y` în care `X` nu este superkey, descompunem relația în:
 
-- `R1 = πX∪Y(R)` cu cheia `X`
+- `R1 = π(X ∪ Y)(R)` cu cheia `X`
 - `R2 = πR-Y(R)` cu vechea cheie
 
 Aplicat iterativ, ajungem la următoarele relații, fiecare în BCNF (toate determinantele sunt chei candidat) și 4NF (fără MVD-uri non-triviale):
@@ -128,7 +128,9 @@ Atributele *derivate* `filme.rating_mediu` și `filme.nr_voturi` au fost adăuga
 
 ### 3.5. Diagrama E/A (UML)
 
-> *[SCREENSHOT: Diagrama UML class diagram a schemei - generabilă din SQL Developer sau dbdiagram.io. Inserați aici imaginea cu toate cele 9 entități și asocierile. Recomand un tool gratuit: https://dbdiagram.io sau https://www.lucidchart.com]*
+Diagrama UML a schemei relaționale (generată automat din sursa PlantUML `docs/diagrams/schema.puml`):
+
+![Diagrama UML a schemei](docs/diagrams/schema.png){ width=100% }
 
 **Descrierea entităților și asocierilor:**
 
@@ -317,6 +319,11 @@ Pachetul expune 8 funcții care returnează `SYS_REFCURSOR` (sau scalar) și 2 p
 
 ### 6.2. Algoritmul de recomandări (collaborative filtering simplu)
 
+Diagrama de flux a algoritmului (sursă: `docs/diagrams/recomandari_flow.puml`):
+
+![Flow recomandări](docs/diagrams/recomandari_flow.png){ width=75% }
+
+
 Este implementat în funcția `f_recomandari` și folosește 4 CTE-uri (WITH-clauses) pentru claritate:
 
 ```sql
@@ -386,7 +393,7 @@ END f_recomandari;
 
 1. **Pasul 1 (preferințe client):** filmele cu `nota >= 3` sunt considerate „apreciate" de client. Acest prag a fost ales conservator — voturile sub 3 indică nemulțumire și nu trebuie folosite ca semnal pozitiv.
 2. **Pasul 2 (clienți similari):** alți clienți care au votat aceleași filme cu un delta de cel mult 1 punct sunt considerați „similari". Numărul de filme cu vot apropiat dă scorul de similaritate. Limităm la top 10 clienți similari (parametru de complexitate algoritmică - `K` standard în collaborative filtering).
-3. **Pasul 3 (candidați):** filme votate cu nota mare (≥ 4) de clienții similari, **excluzând** filmele deja vizionate sau votate de utilizatorul curent — nu vrem să recomandăm ce a văzut deja.
+3. **Pasul 3 (candidați):** filme votate cu nota mare (>= 4) de clienții similari, **excluzând** filmele deja vizionate sau votate de utilizatorul curent — nu vrem să recomandăm ce a văzut deja.
 4. **Pasul 4 (ordonare):** filmele candidat sunt ordonate după frecvența cu care au fost recomandate de clienții similari (signal de consens), apoi după rating mediu (signal de calitate generală).
 
 Aceasta este o variantă simplificată a algoritmului **user-based collaborative filtering** folosit în sisteme reale (Netflix, Amazon). Pentru o versiune cu acuratețe mai mare, s-ar putea ponderare scorul cu `similarity_score`-ul propriu fiecărui client similar (de exemplu media ponderată în loc de simplu COUNT). Am ales abordarea simplă pentru lizibilitate și demo.
@@ -394,6 +401,11 @@ Aceasta este o variantă simplificată a algoritmului **user-based collaborative
 ### 6.3. Algoritmul de analiză sentiment
 
 Implementat în funcția `f_sentiment_film`. Strategia: pentru fiecare comentariu al filmului, se tokenizează textul în cuvinte folosind expresii regulate, fiecare cuvânt este căutat în tabela `cuvinte_sentiment`, polaritățile sunt sumate, iar rezultatul final este clasificat în `'pozitiv' / 'neutru' / 'negativ'`.
+
+Diagrama de flux a algoritmului (sursă: `docs/diagrams/sentiment_flow.puml`):
+
+![Flow sentiment](docs/diagrams/sentiment_flow.png){ width=75% }
+
 
 ```sql
 FUNCTION f_sentiment_film(p_film_id IN NUMBER) RETURN VARCHAR2
@@ -739,19 +751,19 @@ Proiectul îndeplinește toate cerințele rubrice-ului PSGBD:
 
 | Cerință | Realizare |
 |---|---|
-| Minim 5 tabele | ✅ 9 tabele |
-| Minim 15 rânduri/tabel | ✅ 16-30 rânduri |
-| Aplicație web cu GUI | ✅ Flask + Bootstrap 5 |
-| Apelare proceduri/funcții PL/SQL | ✅ Pachet `pkg_filme` cu 10 rutine |
-| Minim 2 triggere | ✅ trg_recalc_rating (compus) + trg_marcheaza_finalizat |
-| Minim 2 excepții PL/SQL prinse | ✅ 6 coduri ORA-20001..-20006 |
-| Script auto creare + populare | ✅ sql/01..05 + sql/99_drop_all |
-| Algoritmi non-CRUD în PL/SQL | ✅ Recomandări (collaborative filtering), sentiment, predicții |
-| Secvențe pentru auto-increment | ✅ 8 secvențe |
-| Toate 5 tipuri de constrângeri | ✅ PK, FK, UNIQUE, NOT NULL, CHECK |
-| Schemă în BCNF | ✅ Normalizare documentată |
-| Fără ORM | ✅ Driver `oracledb` direct, raw SQL/PL-SQL |
-| Commit-uri granulare GitHub | ✅ 14+ commit-uri |
+| Minim 5 tabele | DA 9 tabele |
+| Minim 15 rânduri/tabel | DA 16-30 rânduri |
+| Aplicație web cu GUI | DA Flask + Bootstrap 5 |
+| Apelare proceduri/funcții PL/SQL | DA Pachet `pkg_filme` cu 10 rutine |
+| Minim 2 triggere | DA trg_recalc_rating (compus) + trg_marcheaza_finalizat |
+| Minim 2 excepții PL/SQL prinse | DA 6 coduri ORA-20001..-20006 |
+| Script auto creare + populare | DA sql/01..05 + sql/99_drop_all |
+| Algoritmi non-CRUD în PL/SQL | DA Recomandări (collaborative filtering), sentiment, predicții |
+| Secvențe pentru auto-increment | DA 8 secvențe |
+| Toate 5 tipuri de constrângeri | DA PK, FK, UNIQUE, NOT NULL, CHECK |
+| Schemă în BCNF | DA Normalizare documentată |
+| Fără ORM | DA Driver `oracledb` direct, raw SQL/PL-SQL |
+| Commit-uri granulare GitHub | DA 14+ commit-uri |
 
 **Aspecte cu valoare adăugată** dincolo de cerințele minime:
 - Trigger compus (pattern avansat pentru a evita ORA-04091).
