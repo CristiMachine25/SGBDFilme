@@ -1,13 +1,15 @@
-# Referat proiect PSGBD - Platformă vizualizare filme
-
-**Materia:** Practică Sisteme de Gestiune Baze de Date (PSGBD)
-**Facultatea:** Informatică, Universitatea „Alexandru Ioan Cuza" Iași
-**Proiect:** Proiect 4 - Platformă vizualizare filme
-**Anul universitar:** 2025-2026
-**Student:** Gavrilean Cristian-Mihail
-**Grupa:** 2A3
-**Repository GitHub:** https://github.com/CristiMachine25/SGBDFilme
-
+---
+title: "Proiect Practică SGBD --- Platformă pentru vizualizarea filmelor"
+author: |
+  Gavrilean Cristian-Mihail, Grupa 2A3 \
+  Facultatea de Informatică, Universitatea „Alexandru Ioan Cuza" Iași \
+  Materia: Practică Sisteme de Gestiune Baze de Date \
+  Proiect 4 --- Platformă vizualizare filme \
+  Anul universitar 2025--2026 \
+  Repository: \texttt{github.com/CristiMachine25/SGBDFilme}
+date: "Mai 2026"
+classoption: titlepage
+lang: ro
 ---
 
 ## 1. Introducere
@@ -618,23 +620,23 @@ except oracledb.DatabaseError as e:
 
 ## 8. Prezentarea interfeței
 
-> *Notă: capturile de ecran de mai jos sunt placeholder-e. Pentru livrare, înlocuiți cu screenshot-uri reale ale aplicației rulate local. Toate paginile folosesc Bootstrap 5 încărcat din CDN, deci stilul este uniform și responsive.*
+Capturile de mai jos sunt din aplicația rulată local (Flask + Oracle XE 21 în Docker). Toate paginile folosesc Bootstrap 5 încărcat din CDN, deci stilul este uniform și responsive.
 
 ### 8.1. Pagina principală — catalogul de filme
 
-> *[SCREENSHOT 1: pagina `/` cu cardurile de filme și dropdown-ul de filtrare după categorie. Ar trebui să se vadă header-ul cu meniul de navigare, gridul de filme cu rating și buton „Detalii". Salvați captura ca `docs/screenshots/01_catalog.png`.]*
+![Pagina principală — catalog filme](docs/screenshots/01_catalog.png){ width=100% }
 
 Catalogul afișează toate filmele sub formă de carduri, cu titlul, anul, categoria, ratingul mediu și numărul de voturi. Filtrarea se face prin parametrul `?categorie=X` în URL, gestionat de o ramură condițională în handler-ul Python.
 
 ### 8.2. Login
 
-> *[SCREENSHOT 2: pagina `/login` cu dropdown-ul de clienți. Recomandare: deschideți dropdown-ul ca să se vadă lista de clienți populați. Salvați ca `docs/screenshots/02_login.png`.]*
+![Pagina de login cu dropdown clienți](docs/screenshots/02_login.png){ width=85% }
 
 Pentru simplitate, autentificarea se face prin selectarea unui client din dropdown (demo). Într-un sistem de producție s-ar adăuga parolă și sesiune autentificată corespunzător.
 
 ### 8.3. Detalii film
 
-> *[SCREENSHOT 3: pagina `/film/1` (Inception) cu toate secțiunile: header cu titlul, ratingul, badge-ul de sentiment (verde/gri/roșu), descrierea, lista actorilor, tabelul cu versiuni (cu butoane „Vizionează"), comentariile existente și formularul de vot. Salvați ca `docs/screenshots/03_film_detail.png`.]*
+![Pagina de detalii film cu rating, sentiment, actori, versiuni, comentarii și formular vot](docs/screenshots/03_film_detail.png){ width=100% }
 
 Pagina de detalii integrează **toate** funcțiile PL/SQL relevante pentru un film:
 - `f_film_detalii(id)` — header
@@ -647,13 +649,13 @@ Formularul de vot apelează procedura `p_voteaza` prin POST către `/voteaza`. B
 
 ### 8.4. Recomandări personalizate
 
-> *[SCREENSHOT 4: pagina `/recomandari` accesată ca clientul cu id 1 (Popescu Andrei). Ar trebui să apară 1-3 filme recomandate cu badge-ul „Frecvență: N". Salvați ca `docs/screenshots/04_recomandari.png`.]*
+![Pagina de recomandări personalizate pentru client autentificat](docs/screenshots/04_recomandari.png){ width=100% }
 
 Această pagină apelează `pkg_filme.f_recomandari(client_id, 10)` și afișează rezultatul. Badge-ul „Frecvență" arată câți clienți similari au apreciat fiecare film recomandat — un indicator de încredere al recomandării.
 
 ### 8.5. Pagina admin — statistici
 
-> *[SCREENSHOT 5: pagina `/admin` cu cele două secțiuni: Top filme (tabel cu rating și sentiment) și Predicții sezon (dropdown lună + tabel). Selectați luna în care există vizualizări (de obicei 12). Salvați ca `docs/screenshots/05_admin.png`.]*
+![Pagina admin — top filme cu sentiment și predicții sezoniere](docs/screenshots/05_admin.png){ width=100% }
 
 Pagina admin integrează:
 - `f_top_filme(10)` — top 10 filme.
@@ -668,13 +670,13 @@ Pentru a demonstra prinderea excepțiilor PL/SQL în aplicația-client, sunt pre
 
 ### 9.1. Demo `ORA-20003` (Notă invalidă)
 
-> *[SCREENSHOT 6: trimiteți un POST manual către `/voteaza` cu `nota=10` (de exemplu modificând valoarea în dev-tools browser sau cu un client HTTP). Pe pagina filmului ar trebui să apară mesajul flash roșu „Nota trebuie sa fie intre 1 si 5." Salvați ca `docs/screenshots/06_eroare_nota.png`.]*
+![Eroare ORA-20003 (nota=10) afișată ca alertă Romanian-friendly](docs/screenshots/06_eroare_nota.png){ width=100% }
 
 În condiții normale (nota 1-5), constraint-ul `CHECK ck_voturi_nota` ar prinde valoarea. PL/SQL-ul ridică `ORA-20003` proactiv din `p_voteaza`. Aplicația Flask prinde `oracledb.DatabaseError`, identifică codul prin `parse_oracle_error()` și afișează un mesaj prietenos.
 
 ### 9.2. Demo `ORA-20005` (Luna invalidă)
 
-> *[SCREENSHOT 7: navigați la `/admin?luna=15` (URL manual, lună invalidă). Mesaj flash „Luna invalida (1..12)." Salvați ca `docs/screenshots/07_eroare_luna.png`.]*
+![Eroare ORA-20005 (luna=15) afișată ca alertă pe pagina admin](docs/screenshots/07_eroare_luna.png){ width=100% }
 
 ---
 
@@ -792,7 +794,7 @@ Proiectul îndeplinește toate cerințele rubrice-ului PSGBD:
 
 ### Anexa B. Linkuri și resurse
 
-- Repository GitHub: *[a se completa cu URL-ul după push]*
+- Repository GitHub: https://github.com/CristiMachine25/SGBDFilme
 - Documentație Oracle PL/SQL: https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 - Driver Python oracledb: https://python-oracledb.readthedocs.io/
 - Bootstrap 5: https://getbootstrap.com/docs/5.3/
