@@ -6,10 +6,13 @@ author: |
   Materia: Practică Sisteme de Gestiune Baze de Date \
   Proiect 4 --- Platformă vizualizare filme \
   Anul universitar 2025--2026 \
-  Repository: \texttt{github.com/CristiMachine25/SGBDFilme}
+  Repository: \url{https://github.com/FII-PRACTICA-SGBD/laboratoare-b1-b2-b3-e1-e2-e3-CristiMachine25}
 date: "Mai 2026"
 classoption: titlepage
 lang: ro
+header-includes:
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
 ---
 
 ## 1. Introducere
@@ -794,7 +797,7 @@ Proiectul îndeplinește toate cerințele rubrice-ului PSGBD:
 
 ### Anexa B. Linkuri și resurse
 
-- Repository GitHub: https://github.com/CristiMachine25/SGBDFilme
+- Repository GitHub: https://github.com/FII-PRACTICA-SGBD/laboratoare-b1-b2-b3-e1-e2-e3-CristiMachine25
 - Documentație Oracle PL/SQL: https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 - Driver Python oracledb: https://python-oracledb.readthedocs.io/
 - Bootstrap 5: https://getbootstrap.com/docs/5.3/
